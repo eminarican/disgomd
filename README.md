@@ -16,18 +16,19 @@ func main() {
 		),
 	)
 	defer cli.Close(context.TODO())
-	safetypes.IsErrThen(err, func() {
+	if err != nil {
 		fmt.Println("Couldn't create client")
 		os.Exit(1)
-	})
+	}
 
 	cmd.Init(cli, "!")
 	cmd.Register(cmd.New("test", "just a test command", nil, TestCommand{}))
 
-	safetypes.IsErrThen(cli.OpenGateway(context.TODO()), func() {
+	err = cli.OpenGateway(context.TODO())
+	if err != nil {
 		fmt.Println("Couldn't open gateway")
 		os.Exit(1)
-	})
+	}
 
 	s := make(chan os.Signal, 1)
 	signal.Notify(s, syscall.SIGINT, syscall.SIGTERM, os.Interrupt)
